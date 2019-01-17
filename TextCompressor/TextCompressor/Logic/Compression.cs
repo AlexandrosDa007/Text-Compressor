@@ -13,14 +13,23 @@ namespace TextCompressor.Logic
 
         public static byte[] CompressFile(byte[] decompressedFile)
         {
-            using (MemoryStream memory = new MemoryStream())
+
+            try
             {
-                using (GZipStream gzip = new GZipStream(memory,
-                    CompressionMode.Compress, true))
+                using (MemoryStream memory = new MemoryStream())
                 {
-                    gzip.Write(decompressedFile, 0, decompressedFile.Length);
+                    using (GZipStream gzip = new GZipStream(memory,
+                        CompressionMode.Compress, true))
+                    {
+                        gzip.Write(decompressedFile, 0, decompressedFile.Length);
+                    }
+                    return memory.ToArray();
                 }
-                return memory.ToArray();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
             }
         }
 
@@ -28,25 +37,33 @@ namespace TextCompressor.Logic
         {
             // Create a GZIP stream with decompression mode.
             // ... Then create a buffer and write into while reading from the GZIP stream.
-            using (GZipStream stream = new GZipStream(new MemoryStream(compressedFile),
-                CompressionMode.Decompress))
+            try
             {
-                const int size = 4096;
-                byte[] buffer = new byte[size];
-                using (MemoryStream memory = new MemoryStream())
+                using (GZipStream stream = new GZipStream(new MemoryStream(compressedFile),
+                        CompressionMode.Decompress))
                 {
-                    int count = 0;
-                    do
+                    const int size = 4096;
+                    byte[] buffer = new byte[size];
+                    using (MemoryStream memory = new MemoryStream())
                     {
-                        count = stream.Read(buffer, 0, size);
-                        if (count > 0)
+                        int count = 0;
+                        do
                         {
-                            memory.Write(buffer, 0, count);
+                            count = stream.Read(buffer, 0, size);
+                            if (count > 0)
+                            {
+                                memory.Write(buffer, 0, count);
+                            }
                         }
+                        while (count > 0);
+                        return memory.ToArray();
                     }
-                    while (count > 0);
-                    return memory.ToArray();
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
             }
         }
 

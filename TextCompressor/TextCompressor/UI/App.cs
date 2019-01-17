@@ -42,55 +42,86 @@ namespace TextCompressor
             openFileDialog.Filter = "txt files (*.txt)|*.txt";
             openFileDialog.FilterIndex = 2;
             openFileDialog.RestoreDirectory = true;
+            openFileDialog.Multiselect = true;
 
             if(openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                //Get the path of the specified file
-                filePath = openFileDialog.FileName;
-                //Get the content of the file as a stream
-                Stream fileStream = openFileDialog.OpenFile();
-                //Create a StreamReader object to read the content of the file
-                StreamReader reader = new StreamReader(fileStream);
-                //Read the content and update the string
-                fileContent = reader.ReadToEnd();
-                label2.Text = "File: " + filePath;
+                SetUpFolderPath();
+                //Get the names of the files
+                string[] files = openFileDialog.FileNames;
+                string[] fileNames = new string[files.Length];
+                for (int i = 0; i < files.Length; i++)
+                {
+                    fileNames[i] = Path.GetFileNameWithoutExtension(files[i]);
+                }
+
+                WriteToFiles(files, fileNames);
+
+                System.Diagnostics.Process.Start(folderPath);
             }
         }
 
         private void panel1_DragDrop(object sender, DragEventArgs e)
         {
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop,false);
+            SetUpFolderPath();
 
-            byte[] body = Encoding.UTF8.GetBytes(File.ReadAllText(files[0]));
+            //Get a list of paths from the  files that have been dropped 
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
 
-            byte[] compressed = Compression.CompressFile(body);
+            //Get the names of the files
+            string[] fileNames = new string[files.Length];
+            for (int i = 0; i < files.Length; i++)
+            {
+                fileNames[i] = Path.GetFileNameWithoutExtension(files[i]);
+            }
 
-            File.WriteAllBytes(folderPath+"\\dafaq",compressed);
+            WriteToFiles(files, fileNames);
 
-            byte[] readd = File.ReadAllBytes(folderPath + "\\dafaq");
-
-            byte[] decompressed = Compression.DecompressFile(readd);
-
-            string newbody = Encoding.UTF8.GetString(decompressed);
-
-            Console.WriteLine(newbody);
+            //Open the folder containing the new files
+            System.Diagnostics.Process.Start(folderPath);
 
         }
+
+        
 
         private void panel1_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Copy;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+
+        private void WriteToFiles(string[] files, string[] fileNames)
         {
+            for (int i = 0; i < files.Length; i++)
+            {
+                //Get the bytes of the text in the file
+                byte[] body = Encoding.UTF8.GetBytes(File.ReadAllText(files[i]));
 
+                //Compress the file and get the compressed body
+                byte[] compressed = Compression.CompressFile(body);
+                if(compressed == null)
+                {
+                    MessageBox.Show("Something went wrong with compressing that this file: " + fileNames[i]);
+                    return;
+                }
+
+                //File ends with .compr
+                File.WriteAllBytes(folderPath + "\\" + fileNames[i] + ".compr", compressed);
+
+            }
+
+            panel1.BackColor = SystemColors.Control;
+        }
+        
+        private void SetUpFolderPath()
+        {
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-
-            if(folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            folderBrowserDialog.Description = "Select a folder to place new files.";
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
             {
                 folderPath = folderBrowserDialog.SelectedPath;
             }
         }
+
     }
 }
