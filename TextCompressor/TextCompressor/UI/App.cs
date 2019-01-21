@@ -14,12 +14,21 @@ namespace TextCompressor
 {
     public partial class App : Form
     {
-        private string folderPath;
+        private int mode;
+        private Logic.TextCompressor compressor;
 
-        public App()
+        public App(int mode)
         {
             InitializeComponent();
-            folderPath = Path.GetDirectoryName(Application.ExecutablePath);
+            this.mode = mode;
+
+            toolTip1.SetToolTip(browseButton, "Browse for files or drag'n drop them");
+            if (mode == 0)
+                toolTip1.SetToolTip(panel1, "Drop files here to compress");
+            else
+                toolTip1.SetToolTip(panel1, "Drop files here to decompress");
+            compressor = new Logic.TextCompressor(null,null);
+            
         }
 
         private void panel1_DragOver(object sender, DragEventArgs e)
@@ -46,7 +55,6 @@ namespace TextCompressor
 
             if(openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                SetUpFolderPath();
                 //Get the names of the files
                 string[] files = openFileDialog.FileNames;
                 string[] fileNames = new string[files.Length];
@@ -54,16 +62,19 @@ namespace TextCompressor
                 {
                     fileNames[i] = Path.GetFileNameWithoutExtension(files[i]);
                 }
+                compressor.Files = files;
+                compressor.Names = fileNames;
+                if (mode == 0)
+                    compressor.CompressFiles();
+                else
+                    compressor.DecompressFiles();
 
-                WriteToFiles(files, fileNames);
-
-                System.Diagnostics.Process.Start(folderPath);
+                panel1.BackColor = SystemColors.Control;
             }
         }
 
         private void panel1_DragDrop(object sender, DragEventArgs e)
         {
-            SetUpFolderPath();
 
             //Get a list of paths from the  files that have been dropped 
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
@@ -74,11 +85,14 @@ namespace TextCompressor
             {
                 fileNames[i] = Path.GetFileNameWithoutExtension(files[i]);
             }
+            compressor.Files = files;
+            compressor.Names = fileNames;
+            if (mode == 0)
+                compressor.CompressFiles();
+            else
+                compressor.DecompressFiles();
 
-            WriteToFiles(files, fileNames);
-
-            //Open the folder containing the new files
-            System.Diagnostics.Process.Start(folderPath);
+            panel1.BackColor = SystemColors.Control;
 
         }
 
@@ -87,40 +101,6 @@ namespace TextCompressor
         private void panel1_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Copy;
-        }
-
-
-        private void WriteToFiles(string[] files, string[] fileNames)
-        {
-            for (int i = 0; i < files.Length; i++)
-            {
-                //Get the bytes of the text in the file
-                byte[] body = Encoding.UTF8.GetBytes(File.ReadAllText(files[i]));
-
-                //Compress the file and get the compressed body
-                byte[] compressed = Compression.CompressFile(body);
-                if(compressed == null)
-                {
-                    MessageBox.Show("Something went wrong with compressing that this file: " + fileNames[i]);
-                    return;
-                }
-
-                //File ends with .compr
-                File.WriteAllBytes(folderPath + "\\" + fileNames[i] + ".compr", compressed);
-
-            }
-
-            panel1.BackColor = SystemColors.Control;
-        }
-        
-        private void SetUpFolderPath()
-        {
-            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-            folderBrowserDialog.Description = "Select a folder to place new files.";
-            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-            {
-                folderPath = folderBrowserDialog.SelectedPath;
-            }
         }
 
     }

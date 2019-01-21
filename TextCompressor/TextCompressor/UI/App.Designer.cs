@@ -57,9 +57,9 @@
             this.label1.Font = new System.Drawing.Font("Modern No. 20", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(274, 72);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(134, 21);
+            this.label1.Size = new System.Drawing.Size(142, 21);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Drop file here";
+            this.label1.Text = "Drop files here";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // browseButton
@@ -86,7 +86,7 @@
             this.MaximizeBox = false;
             this.Name = "App";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Text Compressor";
+            this.Text = "Compression";
             this.ResumeLayout(false);
             this.PerformLayout();
 
