@@ -8,13 +8,29 @@ using System.Windows.Forms;
 
 namespace TextCompressor.Logic
 {
-    
+    /// <summary>
+    /// This class contains functions for compressing files.
+    /// </summary>
     public class TextCompressor
     {
+        /// <summary>
+        /// Sets or gets the path that the files are going to be saved.
+        /// </summary>
         public string FolderPath { set; get; }
+        /// <summary>
+        /// Sets or gets an array of paths for all the files to be compressed.
+        /// </summary>
         public string[] Files { set; get; }
+        /// <summary>
+        /// Sets or gets an array of the file names to be compressed.
+        /// </summary>
         public string[] Names { set; get; }
 
+        /// <summary>
+        /// Default constructor for TextCompressor giving two arrays of file paths and names.
+        /// </summary>
+        /// <param name="files"></param>
+        /// <param name="names"></param>
         public TextCompressor(string[] files, string[] names)
         {
             //Loads the default path for the files to be written
@@ -23,6 +39,9 @@ namespace TextCompressor.Logic
             Names = names;
         }
 
+        /// <summary>
+        /// Compressed all the files and write them to files (.gz).
+        /// </summary>
         public void CompressFiles()
         {
             if (!SetUpFolderPath())
@@ -49,6 +68,9 @@ namespace TextCompressor.Logic
             System.Diagnostics.Process.Start(FolderPath);
         }
 
+        /// <summary>
+        /// Decompressed all the files and write them to files (.txt).
+        /// </summary>
         public void DecompressFiles()
         {
             if(!SetUpFolderPath())
@@ -75,6 +97,10 @@ namespace TextCompressor.Logic
             System.Diagnostics.Process.Start(FolderPath);
         }
 
+        /// <summary>
+        /// Opens a folder browser to pick the folder for the compressed files.
+        /// </summary>
+        /// <returns></returns>
         private bool SetUpFolderPath()
         {
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();

@@ -8,9 +8,17 @@ using System.Threading.Tasks;
 
 namespace TextCompressor.Logic
 {
+    /// <summary>
+    /// Provides static functions to compress and decompress byte arrays
+    /// </summary>
     public class Compression
     {
 
+        /// <summary>
+        /// Returns a compressed byte array given a decompressed byte array.
+        /// </summary>
+        /// <param name="decompressedFile"></param>
+        /// <returns></returns>
         public static byte[] CompressFile(byte[] decompressedFile)
         {
 
@@ -33,6 +41,11 @@ namespace TextCompressor.Logic
             }
         }
 
+        /// <summary>
+        /// Returns a decompressed byte array given a compressed byte array.
+        /// </summary>
+        /// <param name="compressedFile"></param>
+        /// <returns></returns>
         public static byte[] DecompressFile(byte[] compressedFile)
         {
             // Create a GZIP stream with decompression mode.

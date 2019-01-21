@@ -14,7 +14,9 @@ namespace TextCompressor
 {
     public partial class App : Form
     {
+        //Mode = 0 -- Compression || Mode == 1 -- Decompression
         private int mode;
+        //The TextCompressor object
         private Logic.TextCompressor compressor;
 
         public App(int mode)
